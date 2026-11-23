@@ -1,0 +1,41 @@
+                                                                                   QUERY PLAN                                                                                   
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=4.76..27.27 rows=4 width=164) (actual time=0.082..0.084 rows=1.00 loops=1)
+   Buffers: shared hit=10
+   ->  Nested Loop  (cost=4.61..26.38 rows=4 width=132) (actual time=0.066..0.068 rows=1.00 loops=1)
+         Buffers: shared hit=8
+         ->  Nested Loop  (cost=4.46..25.93 rows=1 width=132) (actual time=0.051..0.052 rows=1.00 loops=1)
+               Buffers: shared hit=6
+               ->  Nested Loop  (cost=4.31..17.70 rows=1 width=32) (actual time=0.029..0.030 rows=1.00 loops=1)
+                     Join Filter: (cp."sequenceId" = up."sequenceId")
+                     Rows Removed by Join Filter: 10
+                     Buffers: shared hit=4
+                     ->  Index Scan using "user_progress_userId_caseId_key" on user_progress up  (cost=0.15..8.17 rows=1 width=36) (actual time=0.013..0.013 rows=1.00 loops=1)
+                           Index Cond: (("userId" = 2) AND ("caseId" = 'C001'::text))
+                           Index Searches: 1
+                           Buffers: shared hit=2
+                     ->  Bitmap Heap Scan on case_progress cp  (cost=4.16..9.50 rows=2 width=68) (actual time=0.012..0.012 rows=11.00 loops=1)
+                           Recheck Cond: ("caseId" = 'C001'::text)
+                           Heap Blocks: exact=1
+                           Buffers: shared hit=2
+                           ->  Bitmap Index Scan on "case_progress_caseId_sequenceId_key"  (cost=0.00..4.16 rows=2 width=0) (actual time=0.005..0.006 rows=20.00 loops=1)
+                                 Index Cond: ("caseId" = 'C001'::text)
+                                 Index Searches: 1
+                                 Buffers: shared hit=1
+               ->  Index Scan using queries_pkey on queries q  (cost=0.14..8.16 rows=1 width=100) (actual time=0.018..0.018 rows=1.00 loops=1)
+                     Index Cond: (id = cp."queryId")
+                     Index Searches: 1
+                     Buffers: shared hit=2
+         ->  Index Scan using "_EvidenceToQuery_B_index" on "_EvidenceToQuery" eq  (cost=0.15..0.41 rows=4 width=64) (actual time=0.015..0.015 rows=1.00 loops=1)
+               Index Cond: ("B" = q.id)
+               Index Searches: 1
+               Buffers: shared hit=2
+   ->  Index Scan using evidences_pkey on evidences e  (cost=0.15..0.22 rows=1 width=96) (actual time=0.015..0.015 rows=1.00 loops=1)
+         Index Cond: (id = eq."A")
+         Index Searches: 1
+         Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=477
+ Planning Time: 1.737 ms
+ Execution Time: 0.152 ms
+

@@ -1,0 +1,13 @@
+                                                QUERY PLAN                                                 
+-----------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.00..9.72 rows=1 width=100) (actual time=0.014..0.014 rows=1.00 loops=1)
+   Buffers: shared hit=1
+   ->  Seq Scan on users  (cost=0.00..19.45 rows=2 width=100) (actual time=0.012..0.013 rows=1.00 loops=1)
+         Filter: ((username = 'ananya'::text) OR (email = 'ananya'::text))
+         Rows Removed by Filter: 1
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=90
+ Planning Time: 0.724 ms
+ Execution Time: 0.043 ms
+

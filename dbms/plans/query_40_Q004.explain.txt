@@ -1,0 +1,26 @@
+                                                              QUERY PLAN                                                              
+--------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=15.55..33.29 rows=1 width=128) (actual time=0.067..0.070 rows=1.00 loops=1)
+   Buffers: shared hit=4
+   ->  Hash Join  (cost=15.40..32.94 rows=1 width=192) (actual time=0.043..0.045 rows=1.00 loops=1)
+         Hash Cond: ((ac.employee_id = kl.employee_id) AND (ac.access_time = kl."timestamp"))
+         Buffers: shared hit=2
+         ->  Seq Scan on access_cards ac  (cost=0.00..14.30 rows=430 width=128) (actual time=0.014..0.015 rows=10.00 loops=1)
+               Buffers: shared hit=1
+         ->  Hash  (cost=15.38..15.38 rows=2 width=96) (actual time=0.020..0.021 rows=4.00 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on kitchen_logs kl  (cost=0.00..15.38 rows=2 width=96) (actual time=0.008..0.009 rows=4.00 loops=1)
+                     Filter: (action = 'Entered Kitchen'::text)
+                     Rows Removed by Filter: 6
+                     Buffers: shared hit=1
+   ->  Index Scan using employees_pkey on employees e  (cost=0.15..0.28 rows=1 width=32) (actual time=0.022..0.022 rows=1.00 loops=1)
+         Index Cond: (employee_id = ac.employee_id)
+         Filter: (employee_name = 'Rohan Mehra'::text)
+         Index Searches: 1
+         Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=246
+ Planning Time: 1.211 ms
+ Execution Time: 0.138 ms
+

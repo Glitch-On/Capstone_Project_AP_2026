@@ -1,0 +1,24 @@
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=53.04..60.56 rows=430 width=104) (actual time=0.121..0.123 rows=1.00 loops=1)
+   Group Key: c.id
+   Buffers: shared hit=5
+   ->  Sort  (cost=53.04..54.11 rows=430 width=128) (actual time=0.105..0.108 rows=20.00 loops=1)
+         Sort Key: c.id
+         Sort Method: quicksort  Memory: 26kB
+         Buffers: shared hit=5
+         ->  Hash Right Join  (cost=19.68..34.23 rows=430 width=128) (actual time=0.049..0.064 rows=20.00 loops=1)
+               Hash Cond: (cp."caseId" = c.id)
+               Buffers: shared hit=2
+               ->  Seq Scan on case_progress cp  (cost=0.00..13.60 rows=360 width=64) (actual time=0.007..0.009 rows=20.00 loops=1)
+                     Buffers: shared hit=1
+               ->  Hash  (cost=14.30..14.30 rows=430 width=96) (actual time=0.028..0.028 rows=1.00 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                     Buffers: shared hit=1
+                     ->  Seq Scan on cases c  (cost=0.00..14.30 rows=430 width=96) (actual time=0.013..0.013 rows=1.00 loops=1)
+                           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=159
+ Planning Time: 1.219 ms
+ Execution Time: 0.231 ms
+

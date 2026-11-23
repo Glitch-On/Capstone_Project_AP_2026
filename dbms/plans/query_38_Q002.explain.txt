@@ -1,0 +1,30 @@
+                                                                 QUERY PLAN                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=0.31..39.95 rows=1 width=32) (actual time=0.043..0.049 rows=1.00 loops=1)
+   Buffers: shared hit=7
+   ->  Nested Loop  (cost=0.16..31.76 rows=1 width=32) (actual time=0.037..0.043 rows=1.00 loops=1)
+         Buffers: shared hit=5
+         ->  Seq Scan on restaurant_orders ro  (cost=0.00..15.38 rows=2 width=64) (actual time=0.010..0.012 rows=2.00 loops=1)
+               Filter: (dish = 'Mushroom Risotto'::text)
+               Rows Removed by Filter: 8
+               Buffers: shared hit=1
+         ->  Memoize  (cost=0.16..8.18 rows=1 width=32) (actual time=0.014..0.015 rows=0.50 loops=2)
+               Cache Key: ro.guest_id
+               Cache Mode: logical
+               Hits: 0  Misses: 2  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+               Buffers: shared hit=4
+               ->  Index Scan using guests_pkey on guests g  (cost=0.15..8.17 rows=1 width=32) (actual time=0.010..0.010 rows=0.50 loops=2)
+                     Index Cond: (guest_id = ro.guest_id)
+                     Filter: (guest_name = 'Vikram Malhotra'::text)
+                     Rows Removed by Filter: 0
+                     Index Searches: 2
+                     Buffers: shared hit=4
+   ->  Index Scan using waiters_pkey on waiters w  (cost=0.15..8.17 rows=1 width=64) (actual time=0.005..0.005 rows=1.00 loops=1)
+         Index Cond: (id = ro.waiter_id)
+         Index Searches: 1
+         Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=242
+ Planning Time: 1.085 ms
+ Execution Time: 0.116 ms
+

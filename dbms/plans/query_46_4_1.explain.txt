@@ -1,0 +1,45 @@
+                                                                                   QUERY PLAN                                                                                   
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=56.27..56.27 rows=2 width=228) (actual time=0.267..0.270 rows=20.00 loops=1)
+   Sort Key: cp."sequenceId"
+   Sort Method: quicksort  Memory: 26kB
+   Buffers: shared hit=94
+   ->  Nested Loop Left Join  (cost=9.98..56.26 rows=2 width=228) (actual time=0.085..0.223 rows=20.00 loops=1)
+         Buffers: shared hit=91
+         ->  Nested Loop Left Join  (cost=9.83..39.90 rows=2 width=196) (actual time=0.058..0.137 rows=20.00 loops=1)
+               Buffers: shared hit=51
+               ->  Hash Right Join  (cost=9.53..22.99 rows=2 width=164) (actual time=0.055..0.065 rows=20.00 loops=1)
+                     Hash Cond: (q.id = cp."queryId")
+                     Buffers: shared hit=3
+                     ->  Seq Scan on queries q  (cost=0.00..12.50 rows=250 width=64) (actual time=0.006..0.007 rows=8.00 loops=1)
+                           Buffers: shared hit=1
+                     ->  Hash  (cost=9.50..9.50 rows=2 width=132) (actual time=0.040..0.041 rows=20.00 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                           Buffers: shared hit=2
+                           ->  Bitmap Heap Scan on case_progress cp  (cost=4.16..9.50 rows=2 width=132) (actual time=0.023..0.027 rows=20.00 loops=1)
+                                 Recheck Cond: ("caseId" = 'C001'::text)
+                                 Heap Blocks: exact=1
+                                 Buffers: shared hit=2
+                                 ->  Bitmap Index Scan on "case_progress_caseId_sequenceId_key"  (cost=0.00..4.16 rows=2 width=0) (actual time=0.009..0.009 rows=20.00 loops=1)
+                                       Index Cond: ("caseId" = 'C001'::text)
+                                       Index Searches: 1
+                                       Buffers: shared hit=1
+               ->  Nested Loop Left Join  (cost=0.30..8.44 rows=1 width=64) (actual time=0.003..0.003 rows=0.60 loops=20)
+                     Buffers: shared hit=48
+                     ->  Index Scan using dialogues_pkey on dialogues d  (cost=0.15..8.17 rows=1 width=64) (actual time=0.001..0.001 rows=0.60 loops=20)
+                           Index Cond: (id = cp."dialogueId")
+                           Index Searches: 12
+                           Buffers: shared hit=24
+                     ->  Index Scan using npcs_pkey on npcs n  (cost=0.15..0.28 rows=1 width=64) (actual time=0.002..0.002 rows=1.00 loops=12)
+                           Index Cond: (id = d."npcId")
+                           Index Searches: 12
+                           Buffers: shared hit=24
+         ->  Index Scan using locations_pkey on locations l  (cost=0.15..8.17 rows=1 width=64) (actual time=0.004..0.004 rows=1.00 loops=20)
+               Index Cond: (id = cp."locationId")
+               Index Searches: 20
+               Buffers: shared hit=40
+ Planning:
+   Buffers: shared hit=354
+ Planning Time: 1.585 ms
+ Execution Time: 0.397 ms
+

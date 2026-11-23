@@ -1,0 +1,17 @@
+                                                      QUERY PLAN                                                      
+----------------------------------------------------------------------------------------------------------------------
+ Hash Right Anti Join  (cost=24.18..47.82 rows=315 width=36) (actual time=0.048..0.050 rows=1.00 loops=1)
+   Hash Cond: (up."userId" = u.id)
+   Buffers: shared hit=2
+   ->  Seq Scan on user_progress up  (cost=0.00..17.50 rows=750 width=4) (actual time=0.006..0.007 rows=2.00 loops=1)
+         Buffers: shared hit=1
+   ->  Hash  (cost=16.30..16.30 rows=630 width=36) (actual time=0.023..0.023 rows=3.00 loops=1)
+         Buckets: 1024  Batches: 1  Memory Usage: 9kB
+         Buffers: shared hit=1
+         ->  Seq Scan on users u  (cost=0.00..16.30 rows=630 width=36) (actual time=0.010..0.010 rows=3.00 loops=1)
+               Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=248
+ Planning Time: 0.995 ms
+ Execution Time: 0.102 ms
+

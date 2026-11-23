@@ -1,0 +1,23 @@
+                                                               QUERY PLAN                                                               
+----------------------------------------------------------------------------------------------------------------------------------------
+ Unique  (cost=31.74..31.76 rows=2 width=96) (actual time=0.083..0.088 rows=2.00 loops=1)
+   Buffers: shared hit=20
+   ->  Sort  (cost=31.74..31.75 rows=2 width=96) (actual time=0.082..0.084 rows=8.00 loops=1)
+         Sort Key: n.id, n."npcName", n.role
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=20
+         ->  Nested Loop  (cost=0.15..31.73 rows=2 width=96) (actual time=0.033..0.050 rows=8.00 loops=1)
+               Buffers: shared hit=17
+               ->  Seq Scan on dialogues d  (cost=0.00..15.38 rows=2 width=32) (actual time=0.010..0.012 rows=8.00 loops=1)
+                     Filter: ("locationId" = 'L001'::text)
+                     Rows Removed by Filter: 4
+                     Buffers: shared hit=1
+               ->  Index Scan using npcs_pkey on npcs n  (cost=0.15..8.17 rows=1 width=96) (actual time=0.004..0.004 rows=1.00 loops=8)
+                     Index Cond: (id = d."npcId")
+                     Index Searches: 8
+                     Buffers: shared hit=16
+ Planning:
+   Buffers: shared hit=137
+ Planning Time: 1.061 ms
+ Execution Time: 0.163 ms
+

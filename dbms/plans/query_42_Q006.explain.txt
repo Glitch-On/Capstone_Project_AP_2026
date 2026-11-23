@@ -1,0 +1,29 @@
+                                                               QUERY PLAN                                                                
+-----------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on payments p  (cost=38.90..44.25 rows=1 width=32) (actual time=0.065..0.067 rows=1.00 loops=1)
+   Recheck Cond: (receiver_account = (InitPlan 1).col1)
+   Filter: (amount = 50000)
+   Heap Blocks: exact=1
+   Buffers: shared hit=4
+   InitPlan 1
+     ->  Hash Join  (cost=18.16..34.74 rows=2 width=32) (actual time=0.037..0.040 rows=1.00 loops=1)
+           Hash Cond: (b.owner_id = e.employee_id)
+           Buffers: shared hit=2
+           ->  Seq Scan on bank_accounts b  (cost=0.00..15.20 rows=520 width=64) (actual time=0.008..0.009 rows=10.00 loops=1)
+                 Buffers: shared hit=1
+           ->  Hash  (cost=18.12..18.12 rows=3 width=32) (actual time=0.019..0.019 rows=1.00 loops=1)
+                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                 Buffers: shared hit=1
+                 ->  Seq Scan on employees e  (cost=0.00..18.12 rows=3 width=32) (actual time=0.010..0.010 rows=1.00 loops=1)
+                       Filter: (employee_name = 'Rohan Mehra'::text)
+                       Rows Removed by Filter: 9
+                       Buffers: shared hit=1
+   ->  Bitmap Index Scan on payments_receiver_account_idx  (cost=0.00..4.16 rows=2 width=0) (actual time=0.059..0.059 rows=1.00 loops=1)
+         Index Cond: (receiver_account = (InitPlan 1).col1)
+         Index Searches: 1
+         Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=247
+ Planning Time: 1.083 ms
+ Execution Time: 0.130 ms
+

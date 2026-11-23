@@ -1,0 +1,17 @@
+                                                                                                                  QUERY PLAN                                                                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Seq Scan on bank_accounts b  (cost=0.00..8513.30 rows=515 width=96) (actual time=0.066..0.067 rows=0.00 loops=1)
+   Filter: (((owner_type = 'Guest'::text) AND (NOT (ANY (owner_id = (hashed SubPlan 2).col1)))) OR ((owner_type = 'Employee'::text) AND (NOT (ANY (owner_id = (hashed SubPlan 4).col1)))) OR (owner_type <> ALL ('{Guest,Employee}'::text[])))
+   Rows Removed by Filter: 10
+   Buffers: shared hit=3
+   SubPlan 2
+     ->  Seq Scan on guests g  (cost=0.00..16.50 rows=650 width=32) (actual time=0.009..0.010 rows=10.00 loops=1)
+           Buffers: shared hit=1
+   SubPlan 4
+     ->  Seq Scan on employees e  (cost=0.00..16.50 rows=650 width=32) (actual time=0.004..0.005 rows=10.00 loops=1)
+           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=168
+ Planning Time: 0.815 ms
+ Execution Time: 0.109 ms
+

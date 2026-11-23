@@ -1,0 +1,11 @@
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Seq Scan on case_progress  (cost=0.00..14.50 rows=2 width=96) (actual time=0.011..0.011 rows=0.00 loops=1)
+   Filter: (("dialogueId" IS NULL) = ("queryId" IS NULL))
+   Rows Removed by Filter: 20
+   Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=98
+ Planning Time: 0.450 ms
+ Execution Time: 0.046 ms
+

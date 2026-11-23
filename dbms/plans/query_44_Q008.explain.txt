@@ -1,0 +1,70 @@
+                                                                                             QUERY PLAN                                                                                             
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=71.37..90.12 rows=1 width=65) (actual time=0.222..0.225 rows=1.00 loops=1)
+   Buffers: shared hit=40
+   ->  Nested Loop  (cost=71.22..83.27 rows=1 width=32) (actual time=0.210..0.213 rows=1.00 loops=1)
+         Buffers: shared hit=38
+         ->  Limit  (cost=71.07..71.08 rows=1 width=36) (actual time=0.200..0.203 rows=1.00 loops=1)
+               Buffers: shared hit=36
+               ->  Sort  (cost=71.07..71.08 rows=1 width=36) (actual time=0.199..0.201 rows=1.00 loops=1)
+                     Sort Key: p.amount DESC
+                     Sort Method: quicksort  Memory: 25kB
+                     Buffers: shared hit=36
+                     ->  Nested Loop  (cost=38.67..71.06 rows=1 width=36) (actual time=0.136..0.174 rows=1.00 loops=1)
+                           Buffers: shared hit=33
+                           ->  Nested Loop  (cost=35.84..62.87 rows=1 width=32) (actual time=0.119..0.156 rows=1.00 loops=1)
+                                 Buffers: shared hit=31
+                                 ->  Nested Loop  (cost=35.69..61.11 rows=6 width=64) (actual time=0.083..0.120 rows=10.00 loops=1)
+                                       Buffers: shared hit=11
+                                       ->  Hash Join  (cost=35.54..57.77 rows=13 width=64) (actual time=0.062..0.065 rows=4.00 loops=1)
+                                             Hash Cond: (w.waiter_name = e.employee_name)
+                                             Buffers: shared hit=3
+                                             ->  Seq Scan on waiters w  (cost=0.00..18.80 rows=880 width=64) (actual time=0.006..0.007 rows=4.00 loops=1)
+                                                   Buffers: shared hit=1
+                                             ->  Hash  (cost=35.51..35.51 rows=3 width=64) (actual time=0.045..0.046 rows=8.00 loops=1)
+                                                   Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                   Buffers: shared hit=2
+                                                   ->  Hash Join  (cost=16.54..35.51 rows=3 width=64) (actual time=0.036..0.040 rows=8.00 loops=1)
+                                                         Hash Cond: (e.employee_id = b_1.owner_id)
+                                                         Buffers: shared hit=2
+                                                         ->  Seq Scan on employees e  (cost=0.00..16.50 rows=650 width=64) (actual time=0.008..0.008 rows=10.00 loops=1)
+                                                               Buffers: shared hit=1
+                                                         ->  Hash  (cost=16.50..16.50 rows=3 width=64) (actual time=0.021..0.021 rows=8.00 loops=1)
+                                                               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                               Buffers: shared hit=1
+                                                               ->  Seq Scan on bank_accounts b_1  (cost=0.00..16.50 rows=3 width=64) (actual time=0.010..0.012 rows=8.00 loops=1)
+                                                                     Filter: (owner_type = 'Employee'::text)
+                                                                     Rows Removed by Filter: 2
+                                                                     Buffers: shared hit=1
+                                       ->  Index Scan using restaurant_orders_waiter_id_idx on restaurant_orders ro  (cost=0.15..0.24 rows=2 width=64) (actual time=0.012..0.012 rows=2.50 loops=4)
+                                             Index Cond: (waiter_id = w.id)
+                                             Index Searches: 4
+                                             Buffers: shared hit=8
+                                 ->  Index Scan using guests_pkey on guests g_1  (cost=0.15..0.28 rows=1 width=32) (actual time=0.003..0.003 rows=0.10 loops=10)
+                                       Index Cond: (guest_id = ro.guest_id)
+                                       Filter: (guest_name = 'Vikram Malhotra'::text)
+                                       Rows Removed by Filter: 1
+                                       Index Searches: 10
+                                       Buffers: shared hit=20
+                           ->  Bitmap Heap Scan on payments p  (cost=2.83..8.17 rows=2 width=68) (actual time=0.015..0.015 rows=1.00 loops=1)
+                                 Recheck Cond: (receiver_account = b_1.account_id)
+                                 Heap Blocks: exact=1
+                                 Buffers: shared hit=2
+                                 ->  Bitmap Index Scan on payments_receiver_account_idx  (cost=0.00..2.83 rows=2 width=0) (actual time=0.004..0.004 rows=1.00 loops=1)
+                                       Index Cond: (receiver_account = b_1.account_id)
+                                       Index Searches: 1
+                                       Buffers: shared hit=1
+         ->  Index Scan using bank_accounts_pkey on bank_accounts b  (cost=0.15..8.17 rows=1 width=64) (actual time=0.009..0.009 rows=1.00 loops=1)
+               Index Cond: (account_id = p.sender_account)
+               Filter: (owner_type = 'Guest'::text)
+               Index Searches: 1
+               Buffers: shared hit=2
+   ->  Index Scan using guests_pkey on guests g  (cost=0.15..6.83 rows=1 width=97) (actual time=0.010..0.010 rows=1.00 loops=1)
+         Index Cond: (guest_id = b.owner_id)
+         Index Searches: 1
+         Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=361
+ Planning Time: 2.080 ms
+ Execution Time: 0.340 ms
+

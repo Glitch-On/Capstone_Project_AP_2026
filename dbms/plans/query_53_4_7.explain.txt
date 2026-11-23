@@ -1,0 +1,51 @@
+                                                                            QUERY PLAN                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2446.94..2449.04 rows=839 width=80) (actual time=0.171..0.173 rows=10.00 loops=1)
+   Sort Key: (COALESCE(sum(p.amount) FILTER (WHERE (p.receiver_account = b.account_id)), '0'::bigint)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=36
+   ->  HashAggregate  (cost=2397.80..2406.19 rows=839 width=80) (actual time=0.144..0.153 rows=10.00 loops=1)
+         Group Key: b.account_id, COALESCE(g.guest_name, e.employee_name)
+         Batches: 1  Memory Usage: 49kB
+         Buffers: shared hit=33
+         ->  Nested Loop Left Join  (cost=49.61..2385.22 rows=839 width=132) (actual time=0.062..0.129 rows=20.00 loops=1)
+               Buffers: shared hit=33
+               ->  Hash Left Join  (cost=49.25..67.18 rows=520 width=96) (actual time=0.040..0.048 rows=10.00 loops=1)
+                     Hash Cond: (b.owner_id = e.employee_id)
+                     Join Filter: (b.owner_type = 'Employee'::text)
+                     Buffers: shared hit=3
+                     ->  Hash Left Join  (cost=24.62..41.19 rows=520 width=128) (actual time=0.024..0.029 rows=10.00 loops=1)
+                           Hash Cond: (b.owner_id = g.guest_id)
+                           Join Filter: (b.owner_type = 'Guest'::text)
+                           Buffers: shared hit=2
+                           ->  Seq Scan on bank_accounts b  (cost=0.00..15.20 rows=520 width=96) (actual time=0.006..0.006 rows=10.00 loops=1)
+                                 Buffers: shared hit=1
+                           ->  Hash  (cost=16.50..16.50 rows=650 width=64) (actual time=0.013..0.013 rows=10.00 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                 Buffers: shared hit=1
+                                 ->  Seq Scan on guests g  (cost=0.00..16.50 rows=650 width=64) (actual time=0.006..0.008 rows=10.00 loops=1)
+                                       Buffers: shared hit=1
+                     ->  Hash  (cost=16.50..16.50 rows=650 width=64) (actual time=0.007..0.007 rows=10.00 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on employees e  (cost=0.00..16.50 rows=650 width=64) (actual time=0.002..0.003 rows=10.00 loops=1)
+                                 Buffers: shared hit=1
+               ->  Bitmap Heap Scan on payments p  (cost=0.36..4.42 rows=4 width=68) (actual time=0.006..0.006 rows=2.00 loops=10)
+                     Recheck Cond: ((b.account_id = sender_account) OR (b.account_id = receiver_account))
+                     Heap Blocks: exact=10
+                     Buffers: shared hit=30
+                     ->  BitmapOr  (cost=0.36..0.36 rows=4 width=0) (actual time=0.005..0.005 rows=0.00 loops=10)
+                           Buffers: shared hit=20
+                           ->  Bitmap Index Scan on payments_sender_account_idx  (cost=0.00..0.18 rows=2 width=0) (actual time=0.003..0.003 rows=1.00 loops=10)
+                                 Index Cond: (sender_account = b.account_id)
+                                 Index Searches: 10
+                                 Buffers: shared hit=10
+                           ->  Bitmap Index Scan on payments_receiver_account_idx  (cost=0.00..0.18 rows=2 width=0) (actual time=0.001..0.001 rows=1.00 loops=10)
+                                 Index Cond: (receiver_account = b.account_id)
+                                 Index Searches: 10
+                                 Buffers: shared hit=10
+ Planning:
+   Buffers: shared hit=205
+ Planning Time: 0.909 ms
+ Execution Time: 0.254 ms
+

@@ -1,0 +1,15 @@
+                                                  QUERY PLAN                                                  
+--------------------------------------------------------------------------------------------------------------
+ HashSetOp Intersect  (cost=39.13..39.14 rows=3 width=32) (actual time=0.025..0.025 rows=4.00 loops=1)
+   Buffers: shared hit=2
+   ->  Seq Scan on employees  (cost=0.00..18.12 rows=3 width=32) (actual time=0.010..0.011 rows=4.00 loops=1)
+         Filter: (job_title = 'Waiter'::text)
+         Rows Removed by Filter: 6
+         Buffers: shared hit=1
+   ->  Seq Scan on waiters  (cost=0.00..18.80 rows=880 width=32) (actual time=0.003..0.003 rows=4.00 loops=1)
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=91
+ Planning Time: 0.535 ms
+ Execution Time: 0.077 ms
+

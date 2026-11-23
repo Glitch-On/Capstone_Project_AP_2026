@@ -1,0 +1,21 @@
+                                                           QUERY PLAN                                                           
+--------------------------------------------------------------------------------------------------------------------------------
+ Seq Scan on queries q  (cost=0.00..5451.36 rows=188 width=66) (actual time=0.056..0.057 rows=0.00 loops=1)
+   Filter: ((NOT (ANY (id = (hashed SubPlan 6).col1))) OR (NOT (ANY (id = (hashed SubPlan 8).col1))))
+   Rows Removed by Filter: 8
+   Buffers: shared hit=3
+   SubPlan 2
+     ->  Seq Scan on "_EvidenceToQuery" eq  (cost=0.00..18.80 rows=880 width=32) (never executed)
+   SubPlan 4
+     ->  Seq Scan on case_progress cp  (cost=0.00..13.60 rows=360 width=32) (never executed)
+   SubPlan 6
+     ->  Seq Scan on "_EvidenceToQuery" eq_1  (cost=0.00..18.80 rows=880 width=32) (actual time=0.009..0.010 rows=8.00 loops=1)
+           Buffers: shared hit=1
+   SubPlan 8
+     ->  Seq Scan on case_progress cp_1  (cost=0.00..13.60 rows=360 width=32) (actual time=0.006..0.008 rows=20.00 loops=1)
+           Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=181
+ Planning Time: 0.934 ms
+ Execution Time: 0.139 ms
+

@@ -1,0 +1,118 @@
+                                                                                                   QUERY PLAN                                                                                                   
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=218.21..218.22 rows=1 width=164) (actual time=1.005..1.010 rows=40.00 loops=1)
+   Sort Key: ((c.relname)::information_schema.sql_identifier), ((a.attnum)::information_schema.cardinal_number)
+   Sort Method: quicksort  Memory: 31kB
+   Buffers: shared hit=461
+   ->  Nested Loop Left Join  (cost=68.45..218.20 rows=1 width=164) (actual time=0.690..0.971 rows=40.00 loops=1)
+         Buffers: shared hit=455
+         ->  Nested Loop Left Join  (cost=68.05..217.65 rows=1 width=283) (actual time=0.661..0.849 rows=40.00 loops=1)
+               Buffers: shared hit=264
+               ->  Hash Semi Join  (cost=67.62..216.60 rows=1 width=287) (actual time=0.637..0.738 rows=40.00 loops=1)
+                     Hash Cond: (c.relname = (it."tableName")::text)
+                     Buffers: shared hit=130
+                     ->  Hash Join  (cost=38.31..186.81 rows=174 width=287) (actual time=0.467..0.677 rows=103.00 loops=1)
+                           Hash Cond: (t.typnamespace = nt.oid)
+                           Buffers: shared hit=127
+                           ->  Hash Left Join  (cost=37.22..184.78 rows=174 width=227) (actual time=0.451..0.641 rows=103.00 loops=1)
+                                 Hash Cond: (t.typbasetype = bt.oid)
+                                 Join Filter: (t.typtype = 'd'::"char")
+                                 Buffers: shared hit=126
+                                 ->  Nested Loop  (cost=1.65..146.38 rows=174 width=157) (actual time=0.150..0.326 rows=103.00 loops=1)
+                                       Buffers: shared hit=109
+                                       ->  Nested Loop  (cost=1.36..126.69 rows=174 width=142) (actual time=0.141..0.268 rows=103.00 loops=1)
+                                             Buffers: shared hit=94
+                                             ->  Hash Join  (cost=1.08..26.11 rows=58 width=72) (actual time=0.121..0.140 rows=22.00 loops=1)
+                                                   Hash Cond: (c.relnamespace = nc.oid)
+                                                   Buffers: shared hit=23
+                                                   ->  Seq Scan on pg_class c  (cost=0.00..23.77 rows=234 width=76) (actual time=0.007..0.100 rows=235.00 loops=1)
+                                                         Filter: (relkind = ANY ('{r,v,f,p}'::"char"[]))
+                                                         Rows Removed by Filter: 284
+                                                         Buffers: shared hit=16
+                                                   ->  Hash  (cost=1.07..1.07 rows=1 width=4) (actual time=0.014..0.014 rows=1.00 loops=1)
+                                                         Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                         Buffers: shared hit=7
+                                                         ->  Seq Scan on pg_namespace nc  (cost=0.00..1.07 rows=1 width=4) (actual time=0.009..0.011 rows=1.00 loops=1)
+                                                               Filter: ((NOT pg_is_other_temp_schema(oid)) AND (nspname = "current_schema"()))
+                                                               Rows Removed by Filter: 3
+                                                               Buffers: shared hit=7
+                                             ->  Index Scan using pg_attribute_relid_attnum_index on pg_attribute a  (cost=0.28..1.70 rows=3 width=78) (actual time=0.003..0.005 rows=4.68 loops=22)
+                                                   Index Cond: ((attrelid = c.oid) AND (attnum > 0))
+                                                   Filter: ((NOT attisdropped) AND (pg_has_role(c.relowner, 'USAGE'::text) OR has_column_privilege(c.oid, attnum, 'SELECT, INSERT, UPDATE, REFERENCES'::text)))
+                                                   Index Searches: 22
+                                                   Buffers: shared hit=71
+                                       ->  Memoize  (cost=0.29..0.33 rows=1 width=19) (actual time=0.000..0.000 rows=1.00 loops=103)
+                                             Cache Key: a.atttypid
+                                             Cache Mode: logical
+                                             Hits: 98  Misses: 5  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                                             Buffers: shared hit=15
+                                             ->  Index Scan using pg_type_oid_index on pg_type t  (cost=0.28..0.32 rows=1 width=19) (actual time=0.002..0.002 rows=1.00 loops=5)
+                                                   Index Cond: (oid = a.atttypid)
+                                                   Index Searches: 5
+                                                   Buffers: shared hit=15
+                                 ->  Hash  (cost=27.29..27.29 rows=662 width=74) (actual time=0.296..0.296 rows=667.00 loops=1)
+                                       Buckets: 1024  Batches: 1  Memory Usage: 79kB
+                                       Buffers: shared hit=17
+                                       ->  Hash Join  (cost=1.09..27.29 rows=662 width=74) (actual time=0.020..0.206 rows=667.00 loops=1)
+                                             Hash Cond: (bt.typnamespace = nbt.oid)
+                                             Buffers: shared hit=17
+                                             ->  Seq Scan on pg_type bt  (cost=0.00..22.62 rows=662 width=14) (actual time=0.007..0.066 rows=667.00 loops=1)
+                                                   Buffers: shared hit=16
+                                             ->  Hash  (cost=1.04..1.04 rows=4 width=68) (actual time=0.005..0.005 rows=4.00 loops=1)
+                                                   Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                                   Buffers: shared hit=1
+                                                   ->  Seq Scan on pg_namespace nbt  (cost=0.00..1.04 rows=4 width=68) (actual time=0.002..0.002 rows=4.00 loops=1)
+                                                         Buffers: shared hit=1
+                           ->  Hash  (cost=1.04..1.04 rows=4 width=68) (actual time=0.010..0.010 rows=4.00 loops=1)
+                                 Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                 Buffers: shared hit=1
+                                 ->  Seq Scan on pg_namespace nt  (cost=0.00..1.04 rows=4 width=68) (actual time=0.003..0.006 rows=4.00 loops=1)
+                                       Buffers: shared hit=1
+                     ->  Hash  (cost=29.27..29.27 rows=4 width=32) (actual time=0.036..0.036 rows=9.00 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=3
+                           ->  Hash Join  (cost=12.69..29.27 rows=4 width=32) (actual time=0.029..0.032 rows=9.00 loops=1)
+                                 Hash Cond: (it.id = qt."tableId")
+                                 Buffers: shared hit=3
+                                 ->  Seq Scan on investigation_tables it  (cost=0.00..15.20 rows=520 width=64) (actual time=0.004..0.005 rows=9.00 loops=1)
+                                       Buffers: shared hit=1
+                                 ->  Hash  (cost=12.64..12.64 rows=4 width=32) (actual time=0.015..0.016 rows=9.00 loops=1)
+                                       Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                       Buffers: shared hit=2
+                                       ->  Bitmap Heap Scan on query_tables qt  (cost=4.18..12.64 rows=4 width=32) (actual time=0.009..0.011 rows=9.00 loops=1)
+                                             Recheck Cond: ("caseId" = 'C001'::text)
+                                             Heap Blocks: exact=1
+                                             Buffers: shared hit=2
+                                             ->  Bitmap Index Scan on query_tables_pkey  (cost=0.00..4.18 rows=4 width=0) (actual time=0.003..0.003 rows=9.00 loops=1)
+                                                   Index Cond: ("caseId" = 'C001'::text)
+                                                   Index Searches: 1
+                                                   Buffers: shared hit=1
+               ->  Nested Loop  (cost=0.42..1.05 rows=1 width=8) (actual time=0.003..0.003 rows=0.00 loops=40)
+                     Buffers: shared hit=134
+                     ->  Index Scan using pg_depend_reference_index on pg_depend dep  (cost=0.28..0.77 rows=1 width=12) (actual time=0.002..0.002 rows=0.00 loops=40)
+                           Index Cond: ((refclassid = '1259'::oid) AND (refobjid = c.oid) AND (refobjsubid = a.attnum))
+                           Filter: ((classid = '1259'::oid) AND (deptype = 'i'::"char"))
+                           Rows Removed by Filter: 2
+                           Index Searches: 40
+                           Buffers: shared hit=134
+                     ->  Index Only Scan using pg_sequence_seqrelid_index on pg_sequence seq  (cost=0.14..0.28 rows=1 width=4) (never executed)
+                           Index Cond: (seqrelid = dep.objid)
+                           Heap Fetches: 0
+                           Index Searches: 0
+         ->  Nested Loop  (cost=0.41..0.51 rows=1 width=4) (actual time=0.002..0.002 rows=0.00 loops=40)
+               Buffers: shared hit=191
+               ->  Index Scan using pg_collation_oid_index on pg_collation co  (cost=0.28..0.34 rows=1 width=72) (actual time=0.001..0.001 rows=0.93 loops=40)
+                     Index Cond: (oid = a.attcollation)
+                     Index Searches: 40
+                     Buffers: shared hit=117
+               ->  Index Scan using pg_namespace_oid_index on pg_namespace nco  (cost=0.13..0.16 rows=1 width=68) (actual time=0.001..0.001 rows=0.00 loops=37)
+                     Index Cond: (oid = co.collnamespace)
+                     Filter: ((nspname <> 'pg_catalog'::name) OR (co.collname <> 'default'::name))
+                     Rows Removed by Filter: 1
+                     Index Searches: 37
+                     Buffers: shared hit=74
+ Planning:
+   Buffers: shared hit=1110
+ Planning Time: 4.110 ms
+ Execution Time: 1.190 ms
+

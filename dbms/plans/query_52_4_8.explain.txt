@@ -1,0 +1,29 @@
+                                                                QUERY PLAN                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=95.96..97.03 rows=430 width=152) (actual time=0.116..0.117 rows=10.00 loops=1)
+   Sort Key: e.employee_name, ((kl."timestamp")::time without time zone)
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=10
+   ->  WindowAgg  (cost=61.05..77.15 rows=430 width=152) (actual time=0.075..0.083 rows=10.00 loops=1)
+         Window: w1 AS (PARTITION BY kl.employee_id ORDER BY ((kl."timestamp")::time without time zone))
+         Storage: Memory  Maximum Storage: 17kB
+         Buffers: shared hit=2
+         ->  Sort  (cost=61.02..62.10 rows=430 width=136) (actual time=0.067..0.068 rows=10.00 loops=1)
+               Sort Key: kl.employee_id, ((kl."timestamp")::time without time zone)
+               Sort Method: quicksort  Memory: 25kB
+               Buffers: shared hit=2
+               ->  Hash Join  (cost=24.62..42.21 rows=430 width=136) (actual time=0.043..0.049 rows=10.00 loops=1)
+                     Hash Cond: (kl.employee_id = e.employee_id)
+                     Buffers: shared hit=2
+                     ->  Seq Scan on kitchen_logs kl  (cost=0.00..14.30 rows=430 width=96) (actual time=0.004..0.005 rows=10.00 loops=1)
+                           Buffers: shared hit=1
+                     ->  Hash  (cost=16.50..16.50 rows=650 width=64) (actual time=0.018..0.018 rows=10.00 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           Buffers: shared hit=1
+                           ->  Seq Scan on employees e  (cost=0.00..16.50 rows=650 width=64) (actual time=0.003..0.004 rows=10.00 loops=1)
+                                 Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=137
+ Planning Time: 0.556 ms
+ Execution Time: 0.181 ms
+

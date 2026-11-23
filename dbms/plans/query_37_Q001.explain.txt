@@ -1,0 +1,19 @@
+                                                         QUERY PLAN                                                         
+----------------------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=18.16..33.60 rows=2 width=32) (actual time=0.036..0.039 rows=1.00 loops=1)
+   Hash Cond: (ro.guest_id = g.guest_id)
+   Buffers: shared hit=2
+   ->  Seq Scan on restaurant_orders ro  (cost=0.00..14.30 rows=430 width=64) (actual time=0.007..0.008 rows=10.00 loops=1)
+         Buffers: shared hit=1
+   ->  Hash  (cost=18.12..18.12 rows=3 width=32) (actual time=0.018..0.018 rows=1.00 loops=1)
+         Buckets: 1024  Batches: 1  Memory Usage: 9kB
+         Buffers: shared hit=1
+         ->  Seq Scan on guests g  (cost=0.00..18.12 rows=3 width=32) (actual time=0.009..0.010 rows=1.00 loops=1)
+               Filter: (guest_name = 'Vikram Malhotra'::text)
+               Rows Removed by Filter: 9
+               Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=219
+ Planning Time: 0.826 ms
+ Execution Time: 0.091 ms
+

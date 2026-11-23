@@ -1,0 +1,33 @@
+                                                                  QUERY PLAN                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=2.83..42.96 rows=1 width=68) (actual time=0.056..0.061 rows=1.00 loops=1)
+   Buffers: shared hit=4
+   ->  Nested Loop  (cost=0.00..34.77 rows=1 width=32) (actual time=0.029..0.033 rows=1.00 loops=1)
+         Join Filter: (e.employee_id = b.owner_id)
+         Rows Removed by Join Filter: 7
+         Buffers: shared hit=2
+         ->  Seq Scan on bank_accounts b  (cost=0.00..16.50 rows=3 width=64) (actual time=0.012..0.013 rows=8.00 loops=1)
+               Filter: (owner_type = 'Employee'::text)
+               Rows Removed by Filter: 2
+               Buffers: shared hit=1
+         ->  Materialize  (cost=0.00..18.14 rows=3 width=32) (actual time=0.002..0.002 rows=1.00 loops=8)
+               Storage: Memory  Maximum Storage: 17kB
+               Buffers: shared hit=1
+               ->  Seq Scan on employees e  (cost=0.00..18.12 rows=3 width=32) (actual time=0.007..0.008 rows=1.00 loops=1)
+                     Filter: (employee_name = 'Rohan Mehra'::text)
+                     Rows Removed by Filter: 9
+                     Buffers: shared hit=1
+   ->  Bitmap Heap Scan on payments p  (cost=2.83..8.19 rows=1 width=100) (actual time=0.025..0.026 rows=1.00 loops=1)
+         Recheck Cond: (receiver_account = b.account_id)
+         Filter: ((payment_time)::time without time zone < '19:42:00'::time without time zone)
+         Heap Blocks: exact=1
+         Buffers: shared hit=2
+         ->  Bitmap Index Scan on payments_receiver_account_idx  (cost=0.00..2.83 rows=2 width=0) (actual time=0.015..0.016 rows=1.00 loops=1)
+               Index Cond: (receiver_account = b.account_id)
+               Index Searches: 1
+               Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=254
+ Planning Time: 1.163 ms
+ Execution Time: 0.153 ms
+

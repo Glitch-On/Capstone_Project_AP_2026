@@ -1,0 +1,24 @@
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=8.21..8.21 rows=1 width=72) (actual time=0.079..0.080 rows=2.00 loops=1)
+   Sort Key: (count(*)) DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=8
+   ->  GroupAggregate  (cost=8.17..8.20 rows=1 width=72) (actual time=0.063..0.065 rows=2.00 loops=1)
+         Group Key: difficulty
+         Filter: (count(*) > 1)
+         Rows Removed by Filter: 1
+         Buffers: shared hit=5
+         ->  Sort  (cost=8.17..8.18 rows=1 width=64) (actual time=0.049..0.050 rows=8.00 loops=1)
+               Sort Key: difficulty, id
+               Sort Method: quicksort  Memory: 25kB
+               Buffers: shared hit=5
+               ->  Index Scan using "queries_caseId_idx" on queries  (cost=0.14..8.16 rows=1 width=64) (actual time=0.011..0.013 rows=8.00 loops=1)
+                     Index Cond: ("caseId" = 'C001'::text)
+                     Index Searches: 1
+                     Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=133
+ Planning Time: 0.536 ms
+ Execution Time: 0.146 ms
+
